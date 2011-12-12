@@ -93,8 +93,8 @@ class App:
     def user_update_cell(self, event):
         if self.run:
             return
-        j = event.x / self.cell_width
-        i = event.y / self.cell_height
+        j = event.x / self.cell_size
+        i = event.y / self.cell_size
         if (i,j) in self.canvas_items.keys():
             self.canvas.delete(self.canvas_items[(i,j)])
             del self.canvas_items[(i,j)]
@@ -125,8 +125,8 @@ class App:
     
     def drow_cell_entry(self, (x,y)):
         entry = self.canvas.create_rectangle(
-                    y*self.cell_width+3, x*self.cell_height+3, 
-                    (y+1)*self.cell_width-3, (x+1)*self.cell_height-3, 
+                    y*self.cell_size+3, x*self.cell_size+3, 
+                    (y+1)*self.cell_size-3, (x+1)*self.cell_size-3, 
                     fill="#ff0000")
         self.canvas_items[(x,y)] = entry
         return entry
@@ -134,13 +134,14 @@ class App:
     def draw_grid(self):
         self.clear_canvas()        
         self.width = int(self.canvas.cget("width"))
-        self.height = int(self.canvas.cget("height"))
-        self.cell_width = self.width/self.N
-        self.cell_height = self.height/self.M
+        self.height = int(self.canvas.cget("height"))        
+        width = self.width/self.N
+        height = self.height/self.M
+        self.cell_size = min(width, height)
         for i in xrange(1, self.N):
-            self.canvas_lines.append(self.canvas.create_line(0, i*self.cell_height, self.width, i*self.cell_height))
+            self.canvas_lines.append(self.canvas.create_line(0, i*self.cell_size, self.width, i*self.cell_size))
         for i in xrange(1, self.M):
-            self.canvas_lines.append(self.canvas.create_line(i*self.cell_width, 0, i*self.cell_width, self.height))
+            self.canvas_lines.append(self.canvas.create_line(i*self.cell_size, 0, i*self.cell_size, self.height))
     
     def clear_canvas(self):
         for k in self.canvas_items.keys():
