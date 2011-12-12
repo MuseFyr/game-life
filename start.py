@@ -5,13 +5,26 @@ import tkMessageBox
 
 import gamelife
 
-init_filled = [(4,5),(4,6),(4,7),
+init_filled = [
+               (4,5),(4,6),(4,7),
                (5,5),(5,6),(5,7),
                (6,5),(6,6),(6,7),
                               
                (7,8),(7,9),(7,10),
                (8,8),(8,9),(8,10),
                (9,8),(9,9),(9,10),
+               ]
+
+init_filled = [
+               (7,7),(8,7),(9,7),(9,8),(9,9),(8,9),(7,9)
+               ]
+
+init_filled = [
+               (6,6),(6,7),(6,8),(7,8),(8,8),(8,9),(8,10)
+               ]
+
+init_filled = [
+               (7,9),(8,8),(8,9),(8,10)
                ]
 
 
@@ -58,6 +71,9 @@ class App:
         self.stop_button = Button(buttons_frame, text="Stop", command=self.stop, state=DISABLED)
         self.stop_button.pack(side=LEFT)
         
+        self.do_turn_button = Button(buttons_frame, text="Next step", command=self.do_turn)
+        self.do_turn_button.pack(side=RIGHT)
+        
         self.currtime = ''
         self.run = False
         self.delay = 100
@@ -86,19 +102,19 @@ class App:
         self.start_button.after(self.delay, self.timer)        
         
     def vizualize_turn(self, matrix):
+        for k in self.canvas_items.keys():
+            self.canvas.delete(self.canvas_items[k])
+        self.canvas_items = {}
         for i in xrange(self.N):
             for j in xrange(self.M):
                 self.update_cell((i, j), alive=matrix[i][j])    
-    
-    def update_cell(self, (x,y), alive):
-        if alive:
+                
+    def update_cell(self, (x,y), alive):        
+        if alive:            
             self.canvas_items[(x,y)] = self.canvas.create_rectangle(
                     y*self.cell_width+5, x*self.cell_height+5, 
                     (y+1)*self.cell_width-5, (x+1)*self.cell_height-5, 
-                    fill="#000000")
-        elif (x,y) in self.canvas_items.keys():
-            self.canvas.delete(self.canvas_items[(x,y)])
-            del self.canvas_items[(x,y)]
+                    fill="#ff0000")
         
     def draw_grid(self):
         self.clear_canvas()        
