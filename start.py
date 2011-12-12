@@ -22,10 +22,10 @@ init_filled = [
 init_filled = [
                (6,6),(6,7),(6,8),(7,8),(8,8),(8,9),(8,10)
                ]
-
-init_filled = [
-               (7,9),(8,8),(8,9),(8,10)
-               ]
+#
+#init_filled = [
+#               (7,9),(8,8),(8,9),(8,10)
+#               ]
 
 
 class App:
@@ -33,12 +33,13 @@ class App:
     def __init__(self, master):
         matrixframe = Frame(master)
         matrixframe.pack(side=LEFT, fill=BOTH, expand=1)
-        self.canvas = Canvas(matrixframe, background='#ffffff', width=300, height=300)
+        self.canvas = Canvas(matrixframe, background='#ffffff', width=600, height=600)
         self.canvas.pack(side=LEFT, fill=BOTH, expand=1)
+        self.canvas.bind('<Button-1>', self.user_update_cell)
         
         sideframe = Frame(master)
         sideframe.pack()
-        
+                
         delay_frame = Frame(sideframe)
         delay_frame.pack(side=TOP)
         
@@ -62,7 +63,7 @@ class App:
         self.m_field.pack(side=LEFT)
         self.set_nm_button = Button(config_frame, text="Set dimensions", command=self.set_dimensions)
         self.set_nm_button.pack(side=LEFT)
-        
+                
         buttons_frame = Frame(sideframe)
         buttons_frame.pack(side=BOTTOM)
         
@@ -74,6 +75,10 @@ class App:
         self.do_turn_button = Button(buttons_frame, text="Next step", command=self.do_turn)
         self.do_turn_button.pack(side=RIGHT)
         
+        self.clear_button = Button(buttons_frame, text="Clear", command=self.clear)
+        self.clear_button.pack(side=RIGHT)
+                
+        
         self.currtime = ''
         self.run = False
         self.delay = 100
@@ -84,9 +89,17 @@ class App:
         self.canvas_lines = []
         self.draw_grid()
         
-        self.game_life = gamelife.GameLife(self.N, self.M, init_filled)
-                
-        self.vizualize_turn(self.game_life.matrix)
+    
+    def user_update_cell(self, event):
+        if self.run:
+            return
+        j = event.x / self.cell_width
+        i = event.y / self.cell_height
+        if (i,j) in self.canvas_items.keys():
+            self.canvas.delete(self.canvas_items[(i,j)])
+            del self.canvas_items[(i,j)]
+        else:
+            self.canvas_items[(i, j)] = self.drow_cell_entry((i, j))
     
     def do_turn(self):        
         matrix = self.game_life.do_turn()
@@ -107,14 +120,16 @@ class App:
         self.canvas_items = {}
         for i in xrange(self.N):
             for j in xrange(self.M):
-                self.update_cell((i, j), alive=matrix[i][j])    
-                
-    def update_cell(self, (x,y), alive):        
-        if alive:            
-            self.canvas_items[(x,y)] = self.canvas.create_rectangle(
-                    y*self.cell_width+5, x*self.cell_height+5, 
-                    (y+1)*self.cell_width-5, (x+1)*self.cell_height-5, 
+                if matrix[i][j]:
+                    self.drow_cell_entry((i, j))    
+    
+    def drow_cell_entry(self, (x,y)):
+        entry = self.canvas.create_rectangle(
+                    y*self.cell_width+3, x*self.cell_height+3, 
+                    (y+1)*self.cell_width-3, (x+1)*self.cell_height-3, 
                     fill="#ff0000")
+        self.canvas_items[(x,y)] = entry
+        return entry
         
     def draw_grid(self):
         self.clear_canvas()        
@@ -135,10 +150,19 @@ class App:
             self.canvas.delete(v)
         self.canvas_lines = []
 
+    def clear(self):
+        for k in self.canvas_items.keys():
+            self.canvas.delete(self.canvas_items[k])
+        self.canvas_items = {}
+    
+
     def start(self):
         self.start_button.configure(state=DISABLED)
         self.stop_button.configure(state=NORMAL)
         self.set_nm_button.configure(state=DISABLED)
+        
+        self.game_life = gamelife.GameLife(self.N, self.M, self.canvas_items.keys())
+        
         self.run = True        
         self.timer()
 
@@ -176,10 +200,10 @@ class App:
             self.N=n
             self.M=m            
             self.draw_grid()            
-            self.game_life = gamelife.GameLife(self.N, self.M, init_filled)                    
+            self.game_life = gamelife.GameLife(self.N, self.M, self.canvas_items.keys())                    
             self.vizualize_turn(self.game_life.matrix)
         
 root = Tk()
-root.title("Game Life")
+root.title("Python Tkinter implementation of Game of Life, by Taras Bilynskyi")
 app = App(root)
 root.mainloop()
