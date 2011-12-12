@@ -46,7 +46,9 @@ class App:
         
         dealy_label = Label(delay_frame, text="Delay (ms)")
         dealy_label.pack(side=LEFT)        
-        self.delay_field = Entry(delay_frame, width="5")
+        delay_var = StringVar()
+        delay_var.set(100)
+        self.delay_field = Entry(delay_frame, width="5", textvariable=delay_var)
         self.delay_field.pack(side=LEFT)
         set_delay_button = Button(delay_frame, text="Set delay", command=self.set_delay)
         set_delay_button.pack(side=LEFT)
@@ -54,16 +56,24 @@ class App:
         config_frame = Frame(sideframe)
         config_frame.pack(side=TOP)
         
-        n_label = Label(config_frame, text="N")
-        n_label.pack(side=LEFT)        
-        self.n_field = Entry(config_frame, width="3")
+        n_label = Label(config_frame, text="Rows")
+        n_label.pack(side=LEFT)
+        rows_var = StringVar()
+        rows_var.set(20)
+        self.n_field = Entry(config_frame, width="3", textvariable=rows_var)
         self.n_field.pack(side=LEFT)
-        m_label = Label(config_frame, text="M")
-        m_label.pack(side=LEFT)        
-        self.m_field = Entry(config_frame, width="3")
+        m_label = Label(config_frame, text="Cols")
+        m_label.pack(side=LEFT)
+        cols_var = StringVar()
+        cols_var.set(20)        
+        self.m_field = Entry(config_frame, width="3", textvariable=cols_var)
         self.m_field.pack(side=LEFT)
         self.set_nm_button = Button(config_frame, text="Set dimensions", command=self.set_dimensions)
         self.set_nm_button.pack(side=LEFT)
+        self.is_tor = IntVar()
+        self.is_tor.set(1)
+        is_tor_field = Checkbutton(config_frame, text="Is tor", variable=self.is_tor, command=self.set_tor)
+        is_tor_field.pack(side=BOTTOM)
                 
         buttons_frame = Frame(sideframe)
         buttons_frame.pack(side=BOTTOM)
@@ -78,6 +88,11 @@ class App:
         
         self.clear_button = Button(buttons_frame, text="Clear", command=self.clear)
         self.clear_button.pack(side=RIGHT)
+        
+        generation_label_label = Label(sideframe, text="Generation:")
+        generation_label_label.pack(side=LEFT)
+        self.generation_label = Label(sideframe, text="0")
+        self.generation_label.pack(side=LEFT)
                 
         
         self.currtime = ''
@@ -87,6 +102,8 @@ class App:
         self.desk.rows = 20
         self.desk.cols = 20
         self.desk.draw_grid()
+        
+        self.game_life = gamelife.GameLife(self.desk.rows, self.desk.cols)
     
     def user_update_cell(self, event):
         if self.run:
@@ -97,6 +114,7 @@ class App:
     def do_turn(self):        
         matrix = self.game_life.do_turn()
         self.vizualize_turn(matrix)
+        self.generation_label.config(text=str(self.game_life.generation))
     
     def timer(self):
         if not self.run:
@@ -165,6 +183,10 @@ class App:
             self.desk.draw_grid()            
             self.game_life = gamelife.GameLife(self.desk.rows, self.desk.cols, self.desk.desk_objects.keys())                    
             self.vizualize_turn(self.game_life.matrix)
+    
+    def set_tor(self):
+        print self.is_tor.get()
+        self.game_life.is_tor = self.is_tor.get()
         
 root = Tk()
 root.title("Python Tkinter implementation of Game of Life, by Taras Bilynskyi")

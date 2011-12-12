@@ -2,9 +2,11 @@ import copy
 
 class GameLife:
     
-    def __init__(self, N, M, filled=None):
+    def __init__(self, N, M, filled=None, is_tor=True):
         self.N = N
         self.M = M
+        self.generation = 0
+        self.is_tor = is_tor
         
         self.matrix = []
         for i in xrange(self.N):
@@ -29,9 +31,19 @@ class GameLife:
                 else:
                     if neigh_num == 3:
                         self.matrix[i][j] = True
+        self.generation += 1
         return copy.deepcopy(self.matrix)
     
     def _pos(self, (x, y), matrix):
+        if self.is_tor:
+            if x < 0:
+                x = self.N+x
+            if y < 0:
+                y = self.M+y
+            if x >= self.N:
+                x = x-self.N
+            if y >= self.M:
+                y = y-self.M
         try:
             r = matrix[x][y]
         except IndexError:
