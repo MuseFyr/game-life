@@ -71,6 +71,14 @@ class GameLife:
                     line += '-'
             print line
         print ''
+        
+    def set_of_alive(self):
+        res = set()
+        for i in xrange(self.N):
+            for j in xrange(self.M):
+                if self.matrix[i][j]:
+                   res.add((i,j))
+        return res 
                     
 if __name__ == '__main__':
     game = GameLife(5,7,[
