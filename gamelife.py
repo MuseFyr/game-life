@@ -34,21 +34,20 @@ class GameLife:
         self.generation += 1
         return copy.deepcopy(self.matrix)
     
-    def _pos(self, (x, y), matrix):
+    def _pos(self, (i, j), matrix):
         if self.is_tor:
-            if x < 0:
-                x = self.N+x
-            if y < 0:
-                y = self.M+y
-            if x >= self.N:
-                x = x-self.N
-            if y >= self.M:
-                y = y-self.M
-        try:
-            r = matrix[x][y]
-        except IndexError:
-            return None
-        return r
+            ii = i
+            jj = j
+            if i >= self.N:
+                ii = i-self.N
+            if j >= self.M:
+                jj = j-self.M
+            return matrix[ii][jj]                
+        else:
+            if i < 0 or j < 0 or i >= self.N or j >= self.M:
+                return None
+            else:
+                return matrix[i][j]
 
     def _go_around(self, x,y):
         return [
@@ -66,7 +65,7 @@ class GameLife:
             line = ''
             for col in row:
                 if col:
-                    line += '*'
+                    line += '#'
                 else:
                     line += '-'
             print line
@@ -84,6 +83,59 @@ if __name__ == '__main__':
     game = GameLife(5,7,[
                          (2,2),(2,3),(2,4)
                          ])
-    game._print()
-    game.do_turn()
-    game._print()
+#    game._print()
+#    game.do_turn()
+#    game._print()
+    
+    def pos((i,j), matrix, n,m, is_tor):
+        if is_tor:
+            ii = i
+            jj = j
+            if i >= n:
+                ii = i-n
+            if j >= m:
+                jj = j-m
+            return matrix[ii][jj]                
+        else:
+            if i < 0 or j < 0 or i >= n or j >= m:
+                print 'NOT tor NOT in range'
+                return None
+            else:
+                print 'NOT tor in range'
+                return matrix[i][j]
+    matrix1 = [
+              [1,2,3],
+              [4,5,6],
+              [7,8,9]              
+              ]
+    print pos((-1,2), matrix1, 3,3, False)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
